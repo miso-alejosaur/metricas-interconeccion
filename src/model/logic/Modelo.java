@@ -89,15 +89,14 @@ public class Modelo {
 		try {
 			landing = (Landing) ((NodoTS) points.darListaNodos().getElement(1)).getValue();
 			fragmento += "\n Info primer landing point " + "\n Identificador: " + landing.getId() + "\n Nombre: "
-					+ landing.getName()
-					+ " \n Latitud " + landing.getLatitude() + " \n Longitud" + landing.getLongitude();
+					+ landing.getName() + " \n Latitud " + landing.getLatitude() + " \n Longitud"
+					+ landing.getLongitude();
 
 			Country pais = (Country) ((NodoTS) paises.darListaNodos().getElement(paises.darListaNodos().size()))
 					.getValue();
 
 			fragmento += "\n Info último país: " + "\n Capital: " + pais.getCapitalName() + "\n Población: "
-					+ pais.getPopulation() +
-					"\n Usuarios: " + pais.getUsers();
+					+ pais.getPopulation() + "\n Usuarios: " + pais.getUsers();
 		} catch (PosException | VacioException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -252,7 +251,7 @@ public class Modelo {
 
 			ITablaSimbolos tabla = new TablaHashSeparteChaining<>(2);
 			ILista candidatos = new ArregloDinamico<>(1);
-			
+
 			distancia = llenarTabla(distancia, lista2, tabla, candidatos);
 
 			ILista unificado = unificar(candidatos, "Vertice");
@@ -341,6 +340,31 @@ public class Modelo {
 			e1.printStackTrace();
 		}
 
+		req5CalcularDistancias(lista, countries);
+
+		ILista unificado = unificar(countries, "Country");
+
+		Comparator<Country> comparador = null;
+
+		Ordenamiento<Country> algsOrdenamientoEventos = new Ordenamiento<Country>();
+
+		comparador = new ComparadorXKm();
+
+		try {
+
+			if (lista != null) {
+				algsOrdenamientoEventos.ordenarMergeSort(unificado, comparador, true);
+			}
+		} catch (PosException | VacioException | NullException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return unificado;
+
+	}
+
+	private void req5CalcularDistancias(ILista lista, ILista countries) {
 		for (int i = 1; i <= lista.size(); i++) {
 			try {
 				Vertex vertice = (Vertex) lista.getElement(i);
@@ -368,27 +392,6 @@ public class Modelo {
 				e.printStackTrace();
 			}
 		}
-
-		ILista unificado = unificar(countries, "Country");
-
-		Comparator<Country> comparador = null;
-
-		Ordenamiento<Country> algsOrdenamientoEventos = new Ordenamiento<Country>();
-
-		comparador = new ComparadorXKm();
-
-		try {
-
-			if (lista != null) {
-				algsOrdenamientoEventos.ordenarMergeSort(unificado, comparador, true);
-			}
-		} catch (PosException | VacioException | NullException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		return unificado;
-
 	}
 
 	public String req5String(String punto) {
@@ -437,27 +440,7 @@ public class Modelo {
 				algsOrdenamientoEventos.ordenarMergeSort(lista, comparador, false);
 			}
 
-			for (int i = 1; i <= lista.size(); i++) {
-				Country actual = (Country) lista.getElement(i);
-				Country siguiente = (Country) lista.getElement(i + 1);
-
-				if (siguiente != null) {
-					if (comparador.compare(actual, siguiente) != 0) {
-						lista2.insertElement(actual, lista2.size() + 1);
-					}
-				} else {
-					Country anterior = (Country) lista.getElement(i - 1);
-
-					if (anterior != null) {
-						if (comparador.compare(anterior, actual) != 0) {
-							lista2.insertElement(actual, lista2.size() + 1);
-						}
-					} else {
-						lista2.insertElement(actual, lista2.size() + 1);
-					}
-				}
-
-			}
+			realizarUnificacion(lista, lista2, comparador);
 		}
 
 		catch (PosException | VacioException | NullException e) {
@@ -479,31 +462,35 @@ public class Modelo {
 			if (lista != null) {
 				algsOrdenamientoEventos.ordenarMergeSort(lista, comparador, false);
 
-				for (int i = 1; i <= lista.size(); i++) {
-					Vertex actual = (Vertex) lista.getElement(i);
-					Vertex siguiente = (Vertex) lista.getElement(i + 1);
-
-					if (siguiente != null) {
-						if (comparador.compare(actual, siguiente) != 0) {
-							lista2.insertElement(actual, lista2.size() + 1);
-						}
-					} else {
-						Vertex anterior = (Vertex) lista.getElement(i - 1);
-
-						if (anterior != null) {
-							if (comparador.compare(anterior, actual) != 0) {
-								lista2.insertElement(actual, lista2.size() + 1);
-							}
-						} else {
-							lista2.insertElement(actual, lista2.size() + 1);
-						}
-					}
-
-				}
+				realizarUnificacion(lista, lista2, comparador);
 			}
 		} catch (PosException | VacioException | NullException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}
+	}
+
+	private <T extends Comparable<T>> void realizarUnificacion(ILista lista, ILista lista2, Comparator<T> comparador)
+			throws PosException, VacioException, NullException {
+		for (int i = 1; i <= lista.size(); i++) {
+			T actual = (T) lista.getElement(i);
+			T siguiente = (T) lista.getElement(i + 1);
+
+			if (siguiente != null) {
+				if (comparador.compare(actual, siguiente) != 0) {
+					lista2.insertElement(actual, lista2.size() + 1);
+				}
+			} else {
+				T anterior = (T) lista.getElement(i - 1);
+
+				if (anterior != null) {
+					if (comparador.compare(anterior, actual) != 0) {
+						lista2.insertElement(actual, lista2.size() + 1);
+					}
+				} else {
+					lista2.insertElement(actual, lista2.size() + 1);
+				}
+			}
 		}
 	}
 
@@ -523,33 +510,38 @@ public class Modelo {
 			if (lista != null) {
 				algsOrdenamientoEventos.ordenarMergeSort(lista, comparador, false);
 
-				for (int i = 1; i <= lista.size(); i++) {
-					Vertex actual = (Vertex) lista.getElement(i);
-					Vertex siguiente = (Vertex) lista.getElement(i + 1);
-
-					if (siguiente != null) {
-						if (comparador.compare(actual, siguiente) != 0) {
-							tabla.put(actual.getId(), actual);
-						}
-					} else {
-						Vertex anterior = (Vertex) lista.getElement(i - 1);
-
-						if (anterior != null) {
-							if (comparador.compare(anterior, actual) != 0) {
-								tabla.put(actual.getId(), actual);
-							}
-						} else {
-							tabla.put(actual.getId(), actual);
-						}
-					}
-
-				}
+				realizarUnificacionPorHash(lista, comparador, tabla);
 			}
 		} catch (PosException | VacioException | NullException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return tabla;
+	}
+
+	private void realizarUnificacionPorHash(ILista lista, Comparator<Vertex<String, Landing>> comparador,
+			ITablaSimbolos tabla) throws PosException, VacioException {
+		for (int i = 1; i <= lista.size(); i++) {
+			Vertex actual = (Vertex) lista.getElement(i);
+			Vertex siguiente = (Vertex) lista.getElement(i + 1);
+
+			if (siguiente != null) {
+				if (comparador.compare(actual, siguiente) != 0) {
+					tabla.put(actual.getId(), actual);
+				}
+			} else {
+				Vertex anterior = (Vertex) lista.getElement(i - 1);
+
+				if (anterior != null) {
+					if (comparador.compare(anterior, actual) != 0) {
+						tabla.put(actual.getId(), actual);
+					}
+				} else {
+					tabla.put(actual.getId(), actual);
+				}
+			}
+
+		}
 	}
 
 	public void cargar() throws IOException {
@@ -564,24 +556,28 @@ public class Modelo {
 		readConnections();
 
 		try {
-			ILista valores = landingidtabla.valueSet();
-
-			for (int i = 1; i <= valores.size(); i++) {
-				for (int j = 1; j <= ((ILista) valores.getElement(i)).size(); j++) {
-					Vertex vertice1;
-					if ((ILista) valores.getElement(i) != null) {
-						vertice1 = (Vertex) ((ILista) valores.getElement(i)).getElement(j);
-						for (int k = 2; k <= ((ILista) valores.getElement(i)).size(); k++) {
-							Vertex vertice2 = (Vertex) ((ILista) valores.getElement(i)).getElement(k);
-							grafo.addEdge(vertice1.getId(), vertice2.getId(), 100);
-						}
-					}
-				}
-			}
+			llenarGrafo();
 		} catch (PosException | VacioException e) {
 			e.printStackTrace();
 		}
 
+	}
+
+	private void llenarGrafo() throws PosException, VacioException {
+		ILista valores = landingidtabla.valueSet();
+
+		for (int i = 1; i <= valores.size(); i++) {
+			for (int j = 1; j <= ((ILista) valores.getElement(i)).size(); j++) {
+				Vertex vertice1;
+				if ((ILista) valores.getElement(i) != null) {
+					vertice1 = (Vertex) ((ILista) valores.getElement(i)).getElement(j);
+					for (int k = 2; k <= ((ILista) valores.getElement(i)).size(); k++) {
+						Vertex vertice2 = (Vertex) ((ILista) valores.getElement(i)).getElement(k);
+						grafo.addEdge(vertice1.getId(), vertice2.getId(), 100);
+					}
+				}
+			}
+		}
 	}
 
 	private void readConnections() throws FileNotFoundException, IOException {
@@ -611,94 +607,106 @@ public class Modelo {
 
 			Vertex vertice2 = grafo.getVertex(landing2.getLandingId() + cableid);
 
-			String nombrepais1 = landing1.getPais();
+			agregarPaisesEnGrafo(cableid, landing1, landing2);
 
-			String nombrepais2 = landing2.getPais();
+			agregarPesosEnGrafo(cableid, landing1, landing2);
 
-			Country pais1 = null;
-			Country pais2 = null;
-			if (nombrepais1.equals("Côte d'Ivoire")) {
-				pais1 = (Country) paises.get("Cote d'Ivoire");
-			} else if (nombrepais2.equals("Côte d'Ivoire")) {
-				pais2 = (Country) paises.get("Cote d'Ivoire");
-			} else {
-				pais1 = (Country) paises.get(nombrepais1);
-				pais2 = (Country) paises.get(nombrepais2);
+			poblarTabla(landing1, vertice1, landing2, vertice2);
+
+		}
+	}
+
+	private void poblarTabla(Landing landing1, Vertex vertice1, Landing landing2, Vertex vertice2) {
+		try {
+
+			ILista elementopc = (ILista) landingidtabla.get(landing1.getLandingId());
+			if (elementopc == null) {
+				ILista valores = new ArregloDinamico(1);
+				valores.insertElement(vertice1, valores.size() + 1);
+
+				landingidtabla.put(landing1.getLandingId(), valores);
+
+			} else if (elementopc != null) {
+				elementopc.insertElement(vertice1, elementopc.size() + 1);
 			}
 
-			if (pais1 != null) {
-				float weight = distancia(pais1.getLongitude(), pais1.getLatitude(), landing1.getLongitude(),
-						landing1.getLatitude());
+			elementopc = (ILista) landingidtabla.get(landing2.getLandingId());
 
-				grafo.addEdge(pais1.getCapitalName(), landing1.getLandingId() + cableid, weight);
-			}
+			if (elementopc == null) {
+				ILista valores = new ArregloDinamico(1);
+				valores.insertElement(vertice2, valores.size() + 1);
 
-			if (pais2 != null) {
-				float weight2 = distancia(pais2.getLongitude(), pais2.getLatitude(), landing1.getLongitude(),
-						landing1.getLatitude());
+				landingidtabla.put(landing2.getLandingId(), valores);
 
-				grafo.addEdge(pais2.getCapitalName(), landing2.getLandingId() + cableid, weight2);
+			} else if (elementopc != null) {
+				elementopc.insertElement(vertice2, elementopc.size() + 1);
 
 			}
 
-			if (landing1 != null) {
-				if (landing2 != null) {
-					Edge existe1 = grafo.getEdge(landing1.getLandingId() + cableid, landing2.getLandingId() + cableid);
+			elementopc = (ILista) nombrecodigo.get(landing1.getLandingId());
 
-					if (existe1 == null) {
-						float weight3 = distancia(landing1.getLongitude(), landing1.getLatitude(),
-								landing2.getLongitude(), landing2.getLatitude());
-						grafo.addEdge(landing1.getLandingId() + cableid, landing2.getLandingId() + cableid, weight3);
-					} else {
-						float weight3 = distancia(landing1.getLongitude(), landing1.getLatitude(),
-								landing2.getLongitude(), landing2.getLatitude());
-						float peso3 = existe1.getWeight();
+			if (elementopc == null) {
+				String nombre = landing1.getName();
+				String codigo = landing1.getLandingId();
 
-						if (weight3 > peso3) {
-							existe1.setWeight(weight3);
-						}
+				nombrecodigo.put(nombre, codigo);
+
+			}
+		} catch (PosException | NullException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void agregarPesosEnGrafo(String cableid, Landing landing1, Landing landing2) {
+		if (landing1 != null) {
+			if (landing2 != null) {
+				Edge existe1 = grafo.getEdge(landing1.getLandingId() + cableid, landing2.getLandingId() + cableid);
+
+				if (existe1 == null) {
+					float weight3 = distancia(landing1.getLongitude(), landing1.getLatitude(), landing2.getLongitude(),
+							landing2.getLatitude());
+					grafo.addEdge(landing1.getLandingId() + cableid, landing2.getLandingId() + cableid, weight3);
+				} else {
+					float weight3 = distancia(landing1.getLongitude(), landing1.getLatitude(), landing2.getLongitude(),
+							landing2.getLatitude());
+					float peso3 = existe1.getWeight();
+
+					if (weight3 > peso3) {
+						existe1.setWeight(weight3);
 					}
 				}
 			}
+		}
+	}
 
-			try {
+	private void agregarPaisesEnGrafo(String cableid, Landing landing1, Landing landing2) {
+		String nombrepais1 = landing1.getPais();
 
-				ILista elementopc = (ILista) landingidtabla.get(landing1.getLandingId());
-				if (elementopc == null) {
-					ILista valores = new ArregloDinamico(1);
-					valores.insertElement(vertice1, valores.size() + 1);
+		String nombrepais2 = landing2.getPais();
 
-					landingidtabla.put(landing1.getLandingId(), valores);
+		Country pais1 = null;
+		Country pais2 = null;
+		if (nombrepais1.equals("Côte d'Ivoire")) {
+			pais1 = (Country) paises.get("Cote d'Ivoire");
+		} else if (nombrepais2.equals("Côte d'Ivoire")) {
+			pais2 = (Country) paises.get("Cote d'Ivoire");
+		} else {
+			pais1 = (Country) paises.get(nombrepais1);
+			pais2 = (Country) paises.get(nombrepais2);
+		}
 
-				} else if (elementopc != null) {
-					elementopc.insertElement(vertice1, elementopc.size() + 1);
-				}
+		if (pais1 != null) {
+			float weight = distancia(pais1.getLongitude(), pais1.getLatitude(), landing1.getLongitude(),
+					landing1.getLatitude());
 
-				elementopc = (ILista) landingidtabla.get(landing2.getLandingId());
+			grafo.addEdge(pais1.getCapitalName(), landing1.getLandingId() + cableid, weight);
+		}
 
-				if (elementopc == null) {
-					ILista valores = new ArregloDinamico(1);
-					valores.insertElement(vertice2, valores.size() + 1);
+		if (pais2 != null) {
+			float weight2 = distancia(pais2.getLongitude(), pais2.getLatitude(), landing1.getLongitude(),
+					landing1.getLatitude());
 
-					landingidtabla.put(landing2.getLandingId(), valores);
-
-				} else if (elementopc != null) {
-					elementopc.insertElement(vertice2, elementopc.size() + 1);
-
-				}
-
-				elementopc = (ILista) nombrecodigo.get(landing1.getLandingId());
-
-				if (elementopc == null) {
-					String nombre = landing1.getName();
-					String codigo = landing1.getLandingId();
-
-					nombrecodigo.put(nombre, codigo);
-
-				}
-			} catch (PosException | NullException e) {
-				e.printStackTrace();
-			}
+			grafo.addEdge(pais2.getCapitalName(), landing2.getLandingId() + cableid, weight2);
 
 		}
 	}

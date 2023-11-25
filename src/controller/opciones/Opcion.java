@@ -10,8 +10,9 @@ public class Opcion {
 
 	}
 
-	public void ejecutarOpcion(View view, Modelo modelo, Scanner lector) {
+	public Modelo ejecutarOpcion(View view, Modelo modelo, Scanner lector) {
 		view.printMessage("--------- \n Opcion Invalida !! \n---------");
+		return modelo;
 	}
 }
 

@@ -9,7 +9,7 @@ import view.View;
 public class OpcionCargarDatos extends Opcion {
 
 	@Override
-	public void ejecutarOpcion(View view, Modelo modelo, Scanner lector) {
+	public Modelo ejecutarOpcion(View view, Modelo modelo, Scanner lector) {
 		view.printMessage("--------- \nCargar datos");
 		modelo = new Modelo(1);
 		try {
@@ -19,5 +19,7 @@ public class OpcionCargarDatos extends Opcion {
 			e.printStackTrace();
 		}
 		view.printModelo(modelo);
+		
+		return modelo;
 	}
 }
