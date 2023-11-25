@@ -25,7 +25,6 @@ import model.data_structures.TablaHashLinearProbing;
 import model.data_structures.TablaHashSeparteChaining;
 import model.data_structures.VacioException;
 import model.data_structures.Vertex;
-import model.data_structures.YoutubeVideo;
 import utils.Ordenamiento;
 
 /**
@@ -64,18 +63,6 @@ public class Modelo {
 	 */
 	public int darTamano() {
 		return datos.size();
-	}
-
-	/**
-	 * Requerimiento buscar dato
-	 * 
-	 * @param dato Dato a buscar
-	 * @return dato encontrado
-	 * @throws VacioException
-	 * @throws PosException
-	 */
-	public YoutubeVideo getElement(int i) throws PosException, VacioException {
-		return (YoutubeVideo) datos.getElement(i);
 	}
 
 	public String toString() {
@@ -392,25 +379,6 @@ public class Modelo {
 				e.printStackTrace();
 			}
 		}
-	}
-
-	public String req5String(String punto) {
-		ILista afectados = req5(punto);
-
-		String fragmento = "La cantidad de paises afectados es: " + afectados.size() + "\n Los paises afectados son: ";
-
-		for (int i = 1; i <= afectados.size(); i++) {
-			try {
-				fragmento += "\n Nombre: " + ((Country) afectados.getElement(i)).getCountryName()
-						+ "\n Distancia al landing point: " + ((Country) afectados.getElement(i)).getDistlan();
-			} catch (PosException | VacioException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-
-		return fragmento;
-
 	}
 
 	public ILista unificar(ILista lista, String criterio) {
