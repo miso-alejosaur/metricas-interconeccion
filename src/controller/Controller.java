@@ -32,7 +32,7 @@ public class Controller<T> {
 		
 	public void run() 
 	{
-		Scanner lector = new Scanner(System.in).useDelimiter("\r\n");
+		Scanner lector = new Scanner(System.in).useDelimiter("\n");
 		boolean fin = false;
 
 		while( !fin )
