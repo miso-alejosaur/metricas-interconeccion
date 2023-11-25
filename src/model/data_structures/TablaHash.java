@@ -41,6 +41,12 @@ public abstract class TablaHash<K extends Comparable<K>, V extends Comparable <V
 		
 	}
 
+	@Override
+	public int size() 
+	{
+		return tamanoAct;
+	}
+
 	static boolean isPrime(int n)
 	{
 

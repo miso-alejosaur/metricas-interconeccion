@@ -144,12 +144,6 @@ public class TablaHashSeparteChaining <K extends Comparable<K>, V extends Compar
 	}
 
 	@Override
-	public int size() 
-	{
-		return tamanoAct;
-	}
-
-	@Override
 	public ILista<K> keySet() 
 	{
 		ILista<K> lista= new ArregloDinamico(1);

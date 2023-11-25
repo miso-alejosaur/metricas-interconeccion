@@ -4,12 +4,6 @@ import java.text.DecimalFormat;
 
 public class TablaHashLinearProbing <K extends Comparable<K>, V extends Comparable <V>> extends TablaHash<K, V, NodoTS<K,V>> {
 
-	private ILista<NodoTS<K,V>> listaNodos;
-	private int tamanoAct;
-	private int tamanoTabla;
-	private int minicial;
-	private int cantidadRehash;
-
 	public TablaHashLinearProbing(int tamInicial)
 	{
 		int m = nextPrime(tamInicial);
@@ -194,11 +188,6 @@ public class TablaHashLinearProbing <K extends Comparable<K>, V extends Comparab
 	public boolean isEmpty() 
 	{
 		return false;
-	}
-
-	@Override
-	public int size() {
-		return tamanoAct;
 	}
 
 	@Override
