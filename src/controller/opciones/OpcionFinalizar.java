@@ -5,7 +5,7 @@ import java.util.Scanner;
 import model.logic.Modelo;
 import view.View;
 
-public class OpcionFinalizar extends Opcion {
+public class OpcionFinalizar implements IOpcion {
 
 	@Override
 	public Modelo ejecutarOpcion(View view, Modelo modelo, Scanner lector) {

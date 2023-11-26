@@ -4,28 +4,23 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
-import java.util.Comparator;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
 
 import model.data_structures.ArregloDinamico;
 import model.data_structures.Country;
-import model.data_structures.Country.ComparadorXKm;
 import model.data_structures.Edge;
 import model.data_structures.GrafoListaAdyacencia;
 import model.data_structures.ILista;
 import model.data_structures.ITablaSimbolos;
 import model.data_structures.Landing;
 import model.data_structures.NodoTS;
-import model.data_structures.NullException;
 import model.data_structures.PilaEncadenada;
-import model.data_structures.PosException;
 import model.data_structures.TablaHashLinearProbing;
 import model.data_structures.TablaHashSeparteChaining;
-import model.data_structures.VacioException;
 import model.data_structures.Vertex;
-import utils.Ordenamiento;
+import utils.OpcionUtils;
 
 /**
  * Definicion del modelo del mundo
@@ -39,7 +34,7 @@ public class Modelo {
 
 	private GrafoListaAdyacencia grafo;
 
-	private ITablaSimbolos paises;
+	private ITablaSimbolos<String, Country> paises;
 
 	private ITablaSimbolos points;
 
@@ -84,8 +79,7 @@ public class Modelo {
 
 			fragmento += "\n Info último país: " + "\n Capital: " + pais.getCapitalName() + "\n Población: "
 					+ pais.getPopulation() + "\n Usuarios: " + pais.getUsers();
-		} catch (PosException | VacioException e) {
-			// TODO Auto-generated catch block
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
@@ -102,7 +96,7 @@ public class Modelo {
 				if ((int) lista.getElement(i) > max) {
 					max = (int) lista.getElement(i);
 				}
-			} catch (PosException | VacioException e) {
+			} catch (Exception e) {
 				System.out.println(e.toString());
 			}
 
@@ -124,8 +118,7 @@ public class Modelo {
 			} else {
 				fragmento += "\n Los landing points no pertenecen al mismo clúster";
 			}
-		} catch (PosException | VacioException e) {
-			// TODO Auto-generated catch block
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
@@ -133,383 +126,43 @@ public class Modelo {
 
 	}
 
-	public String req2String() {
-		String fragmento = "";
-
-		ILista lista = landingidtabla.valueSet();
-
-		int cantidad = 0;
-
-		int contador = 0;
-
-		for (int i = 1; i <= lista.size(); i++) {
-			try {
-				if (((ILista) lista.getElement(i)).size() > 1 && contador <= 10) {
-					Landing landing = (Landing) ((Vertex) ((ILista) lista.getElement(i)).getElement(1)).getInfo();
-
-					for (int j = 1; j <= ((ILista) lista.getElement(i)).size(); j++) {
-						cantidad += ((Vertex) ((ILista) lista.getElement(i)).getElement(j)).edges().size();
-					}
-
-					fragmento += "\n Landing " + "\n Nombre: " + landing.getName() + "\n País: " + landing.getPais()
-							+ "\n Id: " + landing.getId() + "\n Cantidad: " + cantidad;
-
-					contador++;
-				}
-			} catch (PosException | VacioException e) {
-				e.printStackTrace();
-			}
-
-		}
-
-		return fragmento;
-
+	public ILista mstPrimLazy(String llave) {
+		return grafo.mstPrimLazy(llave);
+	}
+	
+	public ILista valueSet() {
+		return landingidtabla.valueSet();
 	}
 
-	public String req3String(String pais1, String pais2) {
-		Country pais11 = (Country) paises.get(pais1);
-		Country pais22 = (Country) paises.get(pais2);
+	public Country getPais(String pais) {
+		return paises.get(pais);
+	}
+	
+	public PilaEncadenada req3(String pais1, String pais2)
+	{
+		Country pais11 = paises.get(pais1);
+		Country pais22 = paises.get(pais2);
 		String capital1 = pais11.getCapitalName();
 		String capital2 = pais22.getCapitalName();
 
-		PilaEncadenada pila = grafo.minPath(capital1, capital2);
-
-		float distancia = 0;
-
-		String fragmento = "Ruta: ";
-
-		float disttotal = 0;
-
-		double longorigen = 0;
-		double longdestino = 0;
-		double latorigen = 0;
-		double latdestino = 0;
-		String origennombre = "";
-		String destinonombre = "";
-
-		while (!pila.isEmpty()) {
-			Edge arco = ((Edge) pila.pop());
-
-			if (arco.getSource().getInfo().getClass().getName().equals("model.data_structures.Landing")) {
-				longorigen = ((Landing) arco.getSource().getInfo()).getLongitude();
-				latorigen = ((Landing) arco.getSource().getInfo()).getLongitude();
-				origennombre = ((Landing) arco.getSource().getInfo()).getLandingId();
-			}
-			if (arco.getSource().getInfo().getClass().getName().equals("model.data_structures.Country")) {
-				longorigen = ((Country) arco.getSource().getInfo()).getLongitude();
-				latorigen = ((Country) arco.getSource().getInfo()).getLongitude();
-				origennombre = ((Country) arco.getSource().getInfo()).getCapitalName();
-			}
-			if (arco.getDestination().getInfo().getClass().getName().equals("model.data_structures.Landing")) {
-				latdestino = ((Landing) arco.getDestination().getInfo()).getLatitude();
-				longdestino = ((Landing) arco.getDestination().getInfo()).getLatitude();
-				destinonombre = ((Landing) arco.getDestination().getInfo()).getLandingId();
-			}
-			if (arco.getDestination().getInfo().getClass().getName().equals("model.data_structures.Country")) {
-				longdestino = ((Country) arco.getDestination().getInfo()).getLatitude();
-				latdestino = ((Country) arco.getDestination().getInfo()).getLatitude();
-				destinonombre = ((Country) arco.getDestination().getInfo()).getCapitalName();
-			}
-
-			distancia = distancia(longdestino, latdestino, longorigen, latorigen);
-			fragmento += "\n \n Origen: " + origennombre + "  Destino: " + destinonombre + "  Distancia: " + distancia;
-			disttotal += distancia;
-
-		}
-
-		fragmento += "\n Distancia total: " + disttotal;
-
-		return fragmento;
-
+		return grafo.minPath(capital1, capital2);
 	}
-
-	public String req4String() {
-		String fragmento = "";
-		ILista lista1 = landingidtabla.valueSet();
-
-		String llave = "";
-
-		int distancia = 0;
-
-		try {
-			llave = encontrarLlave(lista1, llave);
-
-			ILista lista2 = grafo.mstPrimLazy(llave);
-
-			ITablaSimbolos tabla = new TablaHashSeparteChaining<>(2);
-			ILista candidatos = new ArregloDinamico<>(1);
-
-			distancia = llenarTabla(distancia, lista2, tabla, candidatos);
-
-			ILista unificado = unificar(candidatos, "Vertice");
-			fragmento += " La cantidad de nodos conectada a la red de expansión mínima es: " + unificado.size()
-					+ "\n El costo total es de: " + distancia;
-
-			PilaEncadenada caminomax = calcularCaminoMax(tabla, unificado);
-
-			fragmento += "\n La rama más larga está dada por lo vértices: ";
-			for (int i = 1; i <= caminomax.size(); i++) {
-				Vertex pop = (Vertex) caminomax.pop();
-				fragmento += "\n Id " + i + " : " + pop.getId();
-			}
-		} catch (PosException | VacioException | NullException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-
-		if (fragmento.equals("")) {
-			return "No hay ninguna rama";
-		} else {
-			return fragmento;
-		}
-	}
-
-	private int llenarTabla(int distancia, ILista lista2, ITablaSimbolos tabla, ILista candidatos)
-			throws PosException, VacioException, NullException {
-		for (int i = 1; i <= lista2.size(); i++) {
-			Edge arco = ((Edge) lista2.getElement(i));
-			distancia += arco.getWeight();
-
-			candidatos.insertElement(arco.getSource(), candidatos.size() + 1);
-
-			candidatos.insertElement(arco.getDestination(), candidatos.size() + 1);
-
-			tabla.put(arco.getDestination().getId(), arco.getSource());
-		}
-		return distancia;
-	}
-
-	private PilaEncadenada calcularCaminoMax(ITablaSimbolos tabla, ILista unificado)
-			throws PosException, VacioException {
-		int maximo = 0;
-		int contador = 0;
-		PilaEncadenada caminomax = new PilaEncadenada();
-		for (int i = 1; i <= unificado.size(); i++) {
-
-			PilaEncadenada path = new PilaEncadenada();
-			String idBusqueda = (String) ((Vertex) unificado.getElement(i)).getId();
-			Vertex actual;
-
-			while ((actual = (Vertex) tabla.get(idBusqueda)) != null && actual.getInfo() != null) {
-				path.push(actual);
-				idBusqueda = (String) ((Vertex) actual).getId();
-				contador++;
-			}
-
-			if (contador > maximo) {
-				caminomax = path;
-			}
-		}
-		return caminomax;
-	}
-
-	private String encontrarLlave(ILista lista1, String llave) throws PosException, VacioException {
-		int max = 0;
-		for (int i = 1; i <= lista1.size(); i++) {
-			if (((ILista) lista1.getElement(i)).size() > max) {
-				max = ((ILista) lista1.getElement(i)).size();
-				llave = (String) ((Vertex) ((ILista) lista1.getElement(i)).getElement(1)).getId();
-			}
-		}
-		return llave;
-	}
-
-	public ILista req5(String punto) {
+	
+	public ILista getListaDePunto(String punto) {
 		String codigo = (String) nombrecodigo.get(punto);
-		ILista lista = (ILista) landingidtabla.get(codigo);
+		return (ILista) landingidtabla.get(codigo);
+	}
 
+	public ILista getCountriesDeLista(ILista lista) {
 		ILista countries = new ArregloDinamico<>(1);
 		try {
-			Country paisoriginal = (Country) paises.get(((Landing) ((Vertex) lista.getElement(1)).getInfo()).getPais());
+			Country paisoriginal = paises.get(((Landing) ((Vertex) lista.getElement(1)).getInfo()).getPais());
 			countries.insertElement(paisoriginal, countries.size() + 1);
-		} catch (PosException | VacioException | NullException e1) {
-			// TODO Auto-generated catch block
+		} catch (Exception e1) {
 			e1.printStackTrace();
 		}
 
-		req5CalcularDistancias(lista, countries);
-
-		ILista unificado = unificar(countries, "Country");
-
-		Comparator<Country> comparador = null;
-
-		Ordenamiento<Country> algsOrdenamientoEventos = new Ordenamiento<Country>();
-
-		comparador = new ComparadorXKm();
-
-		try {
-
-			if (lista != null) {
-				algsOrdenamientoEventos.ordenarMergeSort(unificado, comparador, true);
-			}
-		} catch (PosException | VacioException | NullException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		return unificado;
-
-	}
-
-	private void req5CalcularDistancias(ILista lista, ILista countries) {
-		for (int i = 1; i <= lista.size(); i++) {
-			try {
-				Vertex vertice = (Vertex) lista.getElement(i);
-				ILista arcos = vertice.edges();
-
-				for (int j = 1; j <= arcos.size(); j++) {
-					Vertex vertice2 = ((Edge) arcos.getElement(j)).getDestination();
-
-					Country pais = null;
-					if (vertice2.getInfo().getClass().getName().equals("model.data_structures.Landing")) {
-						Landing landing = (Landing) vertice2.getInfo();
-						pais = (Country) paises.get(landing.getPais());
-						countries.insertElement(pais, countries.size() + 1);
-
-						float distancia = distancia(pais.getLongitude(), pais.getLatitude(), landing.getLongitude(),
-								landing.getLatitude());
-
-						pais.setDistlan(distancia);
-					} else {
-						pais = (Country) vertice2.getInfo();
-					}
-				}
-
-			} catch (PosException | VacioException | NullException e) {
-				e.printStackTrace();
-			}
-		}
-	}
-
-	public ILista unificar(ILista lista, String criterio) {
-
-		ILista lista2 = new ArregloDinamico(1);
-
-		if (criterio.equals("Vertice")) {
-			unificarPorVertice(lista, lista2);
-		} else {
-			unificarPorCountry(lista, lista2);
-		}
-
-		return lista2;
-	}
-
-	private void unificarPorCountry(ILista lista, ILista lista2) {
-		Comparator<Country> comparador = null;
-
-		Ordenamiento<Country> algsOrdenamientoEventos = new Ordenamiento<Country>();
-		;
-
-		comparador = new Country.ComparadorXNombre();
-
-		try {
-
-			if (lista != null) {
-				algsOrdenamientoEventos.ordenarMergeSort(lista, comparador, false);
-			}
-
-			realizarUnificacion(lista, lista2, comparador);
-		}
-
-		catch (PosException | VacioException | NullException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-
-	private void unificarPorVertice(ILista lista, ILista lista2) {
-		Comparator<Vertex<String, Landing>> comparador = null;
-
-		Ordenamiento<Vertex<String, Landing>> algsOrdenamientoEventos = new Ordenamiento<Vertex<String, Landing>>();
-		;
-
-		comparador = new Vertex.ComparadorXKey();
-
-		try {
-
-			if (lista != null) {
-				algsOrdenamientoEventos.ordenarMergeSort(lista, comparador, false);
-
-				realizarUnificacion(lista, lista2, comparador);
-			}
-		} catch (PosException | VacioException | NullException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-
-	private <T extends Comparable<T>> void realizarUnificacion(ILista lista, ILista lista2, Comparator<T> comparador)
-			throws PosException, VacioException, NullException {
-		for (int i = 1; i <= lista.size(); i++) {
-			T actual = (T) lista.getElement(i);
-			T siguiente = (T) lista.getElement(i + 1);
-
-			if (siguiente != null) {
-				if (comparador.compare(actual, siguiente) != 0) {
-					lista2.insertElement(actual, lista2.size() + 1);
-				}
-			} else {
-				T anterior = (T) lista.getElement(i - 1);
-
-				if (anterior != null) {
-					if (comparador.compare(anterior, actual) != 0) {
-						lista2.insertElement(actual, lista2.size() + 1);
-					}
-				} else {
-					lista2.insertElement(actual, lista2.size() + 1);
-				}
-			}
-		}
-	}
-
-	public ITablaSimbolos unificarHash(ILista lista) {
-
-		Comparator<Vertex<String, Landing>> comparador = null;
-
-		Ordenamiento<Vertex<String, Landing>> algsOrdenamientoEventos = new Ordenamiento<Vertex<String, Landing>>();
-		;
-
-		comparador = new Vertex.ComparadorXKey();
-
-		ITablaSimbolos tabla = new TablaHashSeparteChaining<>(2);
-
-		try {
-
-			if (lista != null) {
-				algsOrdenamientoEventos.ordenarMergeSort(lista, comparador, false);
-
-				realizarUnificacionPorHash(lista, comparador, tabla);
-			}
-		} catch (PosException | VacioException | NullException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return tabla;
-	}
-
-	private void realizarUnificacionPorHash(ILista lista, Comparator<Vertex<String, Landing>> comparador,
-			ITablaSimbolos tabla) throws PosException, VacioException {
-		for (int i = 1; i <= lista.size(); i++) {
-			Vertex actual = (Vertex) lista.getElement(i);
-			Vertex siguiente = (Vertex) lista.getElement(i + 1);
-
-			if (siguiente != null) {
-				if (comparador.compare(actual, siguiente) != 0) {
-					tabla.put(actual.getId(), actual);
-				}
-			} else {
-				Vertex anterior = (Vertex) lista.getElement(i - 1);
-
-				if (anterior != null) {
-					if (comparador.compare(anterior, actual) != 0) {
-						tabla.put(actual.getId(), actual);
-					}
-				} else {
-					tabla.put(actual.getId(), actual);
-				}
-			}
-
-		}
+		return countries;
 	}
 
 	public void cargar() throws IOException {
@@ -525,13 +178,13 @@ public class Modelo {
 
 		try {
 			llenarGrafo();
-		} catch (PosException | VacioException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
 	}
 
-	private void llenarGrafo() throws PosException, VacioException {
+	private void llenarGrafo() throws Exception {
 		ILista valores = landingidtabla.valueSet();
 
 		for (int i = 1; i <= valores.size(); i++) {
@@ -620,7 +273,7 @@ public class Modelo {
 				nombrecodigo.put(nombre, codigo);
 
 			}
-		} catch (PosException | NullException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
@@ -631,11 +284,11 @@ public class Modelo {
 				Edge existe1 = grafo.getEdge(landing1.getLandingId() + cableid, landing2.getLandingId() + cableid);
 
 				if (existe1 == null) {
-					float weight3 = distancia(landing1.getLongitude(), landing1.getLatitude(), landing2.getLongitude(),
+					float weight3 = OpcionUtils.distancia(landing1.getLongitude(), landing1.getLatitude(), landing2.getLongitude(),
 							landing2.getLatitude());
 					grafo.addEdge(landing1.getLandingId() + cableid, landing2.getLandingId() + cableid, weight3);
 				} else {
-					float weight3 = distancia(landing1.getLongitude(), landing1.getLatitude(), landing2.getLongitude(),
+					float weight3 = OpcionUtils.distancia(landing1.getLongitude(), landing1.getLatitude(), landing2.getLongitude(),
 							landing2.getLatitude());
 					float peso3 = existe1.getWeight();
 
@@ -664,14 +317,14 @@ public class Modelo {
 		}
 
 		if (pais1 != null) {
-			float weight = distancia(pais1.getLongitude(), pais1.getLatitude(), landing1.getLongitude(),
+			float weight = OpcionUtils.distancia(pais1.getLongitude(), pais1.getLatitude(), landing1.getLongitude(),
 					landing1.getLatitude());
 
 			grafo.addEdge(pais1.getCapitalName(), landing1.getLandingId() + cableid, weight);
 		}
 
 		if (pais2 != null) {
-			float weight2 = distancia(pais2.getLongitude(), pais2.getLatitude(), landing1.getLongitude(),
+			float weight2 = OpcionUtils.distancia(pais2.getLongitude(), pais2.getLatitude(), landing1.getLongitude(),
 					landing1.getLatitude());
 
 			grafo.addEdge(pais2.getCapitalName(), landing2.getLandingId() + cableid, weight2);
@@ -739,30 +392,6 @@ public class Modelo {
 			}
 
 		}
-	}
-
-	private static float distancia(double lon1, double lat1, double lon2, double lat2) {
-
-		double earthRadius = 6371; // km
-
-		lat1 = Math.toRadians(lat1);
-		lon1 = Math.toRadians(lon1);
-		lat2 = Math.toRadians(lat2);
-		lon2 = Math.toRadians(lon2);
-
-		double dlon = (lon2 - lon1);
-		double dlat = (lat2 - lat1);
-
-		double sinlat = Math.sin(dlat / 2);
-		double sinlon = Math.sin(dlon / 2);
-
-		double a = (sinlat * sinlat) + Math.cos(lat1) * Math.cos(lat2) * (sinlon * sinlon);
-		double c = 2 * Math.asin(Math.min(1.0, Math.sqrt(a)));
-
-		double distance = earthRadius * c;
-
-		return (int) distance;
-
 	}
 
 }

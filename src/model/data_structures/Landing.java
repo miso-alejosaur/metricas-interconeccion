@@ -90,4 +90,10 @@ public class Landing implements Comparable <Landing>
 	public void setCodigo(String codigo) {
 		this.codigo = codigo;
 	}
+	
+	@Override
+	public String toString() {
+		return "\n Landing " + "\n Nombre: " + this.getName() + "\n País: " + this.getPais()
+		+ "\n Id: " + this.getId();
+	}
 }

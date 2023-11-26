@@ -17,6 +17,16 @@ public class Edge <K extends Comparable<K>, V extends Comparable <V>> implements
 		return source;
 	}
 	
+	public String getSourceVertexClassName()
+	{
+		return getSource().getInfo().getClass().getName();
+	}
+	
+	public String getDestiationVertexClassName()
+	{
+		return getDestination().getInfo().getClass().getName();
+	}
+	
 	public Vertex<K,V> getDestination()
 	{
 		return destination;
