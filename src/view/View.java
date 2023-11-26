@@ -27,10 +27,5 @@ public class View
 		public void printMessage(String mensaje) {
 
 			System.out.println(mensaje);
-		}		
-		
-		public void printModelo(Modelo modelo)
-		{
-			System.out.println(modelo);
 		}
 }

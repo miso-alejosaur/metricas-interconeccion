@@ -2,6 +2,7 @@ package controller;
 
 import java.util.Scanner;
 
+import controller.opciones.IOpcion;
 import controller.opciones.Opcion;
 import controller.opciones.OpcionCargarDatos;
 import controller.opciones.OpcionComponentesConectados;
@@ -10,6 +11,7 @@ import controller.opciones.OpcionFallasEnConexion;
 import controller.opciones.OpcionFinalizar;
 import controller.opciones.OpcionRedExpansionMinima;
 import controller.opciones.OpcionRutaMinima;
+import controller.opciones.OpcionesFactory;
 import model.logic.Modelo;
 import view.View;
 
@@ -32,6 +34,7 @@ public class Controller<T> {
 
 	public void run() {
 		Scanner lector = new Scanner(System.in).useDelimiter("\r\n");
+		OpcionesFactory factory = new OpcionesFactory();
 		boolean fin = false;
 
 		while (!fin) {
@@ -39,7 +42,7 @@ public class Controller<T> {
 
 			int option = lector.nextInt();
 
-			modelo = getOpcion(option).ejecutarOpcion(view, modelo, lector);
+			modelo = factory.getOpcion(option).ejecutarOpcion(view, modelo, lector);
 
 			if (option == 7) {
 				fin = true;
@@ -47,33 +50,5 @@ public class Controller<T> {
 			}
 		}
 
-	}
-
-	private Opcion getOpcion(int option) {
-		switch (option) {
-		case 1:
-			return new OpcionCargarDatos();
-
-		case 2:
-			return new OpcionComponentesConectados();
-
-		case 3:
-			return new OpcionEncontrarLandingsInterconexion();
-
-		case 4:
-			return new OpcionRutaMinima();
-
-		case 5:
-			return new OpcionRedExpansionMinima();
-
-		case 6:
-			return new OpcionFallasEnConexion();
-
-		case 7:
-			return new OpcionFinalizar();
-
-		default:
-			return new Opcion();
-		}
 	}
 }

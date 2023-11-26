@@ -3,14 +3,11 @@ package utils;
 import java.util.Comparator;
 
 import model.data_structures.ILista;
-import model.data_structures.NullException;
-import model.data_structures.PosException;
-import model.data_structures.VacioException;
 
 public final class Ordenamiento <T extends Comparable <T>>
 {
 
-	public void ordenarSeleccion(ILista<T> lista, Comparator<T> criterio, boolean ascendente ) throws PosException, VacioException
+	public void ordenarSeleccion(ILista<T> lista, Comparator<T> criterio, boolean ascendente ) throws Exception
 	{
 		for (int i=1; i<=lista.size(); i++)
 		{
@@ -28,7 +25,7 @@ public final class Ordenamiento <T extends Comparable <T>>
 		}
 	}
 	
-	public void ordenarInsercion(ILista<T> lista, Comparator<T> criterio, boolean ascendente ) throws PosException, VacioException
+	public void ordenarInsercion(ILista<T> lista, Comparator<T> criterio, boolean ascendente ) throws Exception
 	{
 		
 		for (int i=2; i<= lista.size(); i++)
@@ -51,7 +48,7 @@ public final class Ordenamiento <T extends Comparable <T>>
 	
 	}
 	
-	public void ordenarShell (ILista<T> lista, Comparator<T> criterio, boolean ascendente ) throws PosException, VacioException
+	public void ordenarShell (ILista<T> lista, Comparator<T> criterio, boolean ascendente ) throws Exception
 	{
 		int n=lista.size();
 		int h=1;
@@ -86,7 +83,7 @@ public final class Ordenamiento <T extends Comparable <T>>
 		}
 	}
 	
-	public void sort (ILista<T> lista, Comparator<T> criterio, boolean ascendente, int lo, int hi) throws PosException, VacioException
+	public void sort (ILista<T> lista, Comparator<T> criterio, boolean ascendente, int lo, int hi) throws Exception
 	{
 		if(lo>=hi)
 			return;
@@ -95,12 +92,12 @@ public final class Ordenamiento <T extends Comparable <T>>
 		sort(lista, criterio, ascendente, pivot +1, hi);
 	}
 	
-	public void ordenarQuickSort(ILista<T> lista, Comparator<T> criterio, boolean ascendente) throws PosException, VacioException
+	public void ordenarQuickSort(ILista<T> lista, Comparator<T> criterio, boolean ascendente) throws Exception
 	{
 		sort(lista, criterio, ascendente, 1, lista.size());
 	}
 	
-	public int partition(ILista<T> lista, Comparator<T> criterio, boolean ascendente, int lo, int hi) throws PosException, VacioException
+	public int partition(ILista<T> lista, Comparator<T> criterio, boolean ascendente, int lo, int hi) throws Exception
 	{
 		int follower, leader;
 		follower=leader=lo;
@@ -121,7 +118,7 @@ public final class Ordenamiento <T extends Comparable <T>>
 		return follower;
 	}
 	
-	public final void ordenarMergeSort(ILista<T> lista, Comparator<T> criterio, boolean ascendente) throws PosException, VacioException, NullException
+	public final void ordenarMergeSort(ILista<T> lista, Comparator<T> criterio, boolean ascendente) throws Exception
 	{
 		int size = lista.size();
 		if(size > 1)

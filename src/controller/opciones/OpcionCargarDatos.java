@@ -6,7 +6,7 @@ import java.util.Scanner;
 import model.logic.Modelo;
 import view.View;
 
-public class OpcionCargarDatos extends Opcion {
+public class OpcionCargarDatos implements IOpcion {
 
 	@Override
 	public Modelo ejecutarOpcion(View view, Modelo modelo, Scanner lector) {
@@ -18,7 +18,7 @@ public class OpcionCargarDatos extends Opcion {
 
 			e.printStackTrace();
 		}
-		view.printModelo(modelo);
+		view.printMessage(modelo.toString());
 		
 		return modelo;
 	}

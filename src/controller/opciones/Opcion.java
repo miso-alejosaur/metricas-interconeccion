@@ -5,7 +5,7 @@ import java.util.Scanner;
 import model.logic.Modelo;
 import view.View;
 
-public class Opcion {
+public class Opcion implements IOpcion {
 	public Opcion() {
 
 	}
