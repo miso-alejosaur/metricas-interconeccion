@@ -8,8 +8,10 @@ import view.View;
 public class OpcionEncontrarLandingsInterconexion extends Opcion {
 
 	@Override
-	public void ejecutarOpcion(View view, Modelo modelo, Scanner lector) {
+	public Modelo ejecutarOpcion(View view, Modelo modelo, Scanner lector) {
 		String res2 = modelo.req2String();
 		view.printMessage(res2);
+		
+		return modelo;
 	}
 }

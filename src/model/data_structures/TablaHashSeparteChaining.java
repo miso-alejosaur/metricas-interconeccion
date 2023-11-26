@@ -2,8 +2,6 @@ package model.data_structures;
 
 import java.text.DecimalFormat;
 
-import sun.security.util.Debug;
-
 public class TablaHashSeparteChaining <K extends Comparable<K>, V extends Comparable <V>> extends TablaHash<K, V, ILista<NodoTS<K,V>>>
 {
 	
@@ -153,16 +151,7 @@ public class TablaHashSeparteChaining <K extends Comparable<K>, V extends Compar
 		{
 			for (int i=1; i<= tamanoTabla; i++)
 			{
-				if (listaNodos.getElement(i) !=null)
-				{
-					for (int j=1; j<=listaNodos.getElement(i).size(); j++)
-					{
-						if (listaNodos.getElement(i).getElement(j)!= null)
-						{
-							lista.insertElement(listaNodos.getElement(i).getElement(j).getKey(), lista.size()+1);
-						}
-					}
-				}
+				insertKeyAt(lista, i);
 			}
 		}
 		catch (PosException | NullException | VacioException e) 
@@ -174,6 +163,19 @@ public class TablaHashSeparteChaining <K extends Comparable<K>, V extends Compar
 		return lista;
 	}
 
+	private void insertKeyAt(ILista<K> lista, int i) throws PosException, VacioException, NullException {
+		if (listaNodos.getElement(i) !=null)
+		{
+			for (int j=1; j<=listaNodos.getElement(i).size(); j++)
+			{
+				if (listaNodos.getElement(i).getElement(j)!= null)
+				{
+					lista.insertElement(listaNodos.getElement(i).getElement(j).getKey(), lista.size()+1);
+				}
+			}
+		}
+	}
+
 	@Override
 	public ILista<V> valueSet() 
 	{
@@ -183,17 +185,7 @@ public class TablaHashSeparteChaining <K extends Comparable<K>, V extends Compar
 		{
 			for (int i=1; i<= tamanoTabla; i++)
 			{
-				if (listaNodos.getElement(i)!=null)
-				{
-					for (int j=1; j<= listaNodos.getElement(i).size(); j++)
-					{
-						if (listaNodos.getElement(i).getElement(j)!= null)
-						{
-							lista.insertElement(listaNodos.getElement(i).getElement(j).getValue(), lista.size()+1);
-						}
-					}
-				}
-				
+				insertValueAt(lista, i);
 			}
 		}
 		catch (PosException | NullException | VacioException e) 
@@ -204,6 +196,19 @@ public class TablaHashSeparteChaining <K extends Comparable<K>, V extends Compar
 		return lista;
 	}
 
+	private void insertValueAt(ILista<V> lista, int i) throws PosException, VacioException, NullException {
+		if (listaNodos.getElement(i)!=null)
+		{
+			for (int j=1; j<= listaNodos.getElement(i).size(); j++)
+			{
+				if (listaNodos.getElement(i).getElement(j)!= null)
+				{
+					lista.insertElement(listaNodos.getElement(i).getElement(j).getValue(), lista.size()+1);
+				}
+			}
+		}
+	}
+
 	@Override
 	public ILista<NodoTS<K, V>> darListaNodos() 
 	{
@@ -212,18 +217,7 @@ public class TablaHashSeparteChaining <K extends Comparable<K>, V extends Compar
 		{
 			for (int i=1; i<= tamanoTabla; i++)
 			{
-				ILista<NodoTS<K,V>> elemento= listaNodos.getElement(i);
-				if(elemento!= null && !elemento.isEmpty())
-				{
-					for(int j=1; j<= elemento.size(); j++)
-					{
-						NodoTS<K,V> elemento2= elemento.getElement(j);
-						if(elemento2 != null && !elemento.isEmpty())
-						{
-							nodos.insertElement(elemento2, nodos.size()+1);
-						}
-					}
-				}
+				copiarElementos(nodos, i);
 			}
 		}
 		catch (PosException | NullException | VacioException e) 
@@ -233,6 +227,21 @@ public class TablaHashSeparteChaining <K extends Comparable<K>, V extends Compar
 		
 		return nodos;
 		
+	}
+
+	private void copiarElementos(ILista<NodoTS<K, V>> nodos, int i) throws PosException, VacioException, NullException {
+		ILista<NodoTS<K,V>> elemento= listaNodos.getElement(i);
+		if(elemento!= null && !elemento.isEmpty())
+		{
+			for(int j=1; j<= elemento.size(); j++)
+			{
+				NodoTS<K,V> elemento2= elemento.getElement(j);
+				if(elemento2 != null && !elemento.isEmpty())
+				{
+					nodos.insertElement(elemento2, nodos.size()+1);
+				}
+			}
+		}
 	}
 	@Override
 	public int hash(K key) 

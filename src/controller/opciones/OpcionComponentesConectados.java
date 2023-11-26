@@ -8,7 +8,7 @@ import view.View;
 public class OpcionComponentesConectados extends Opcion {
 
 	@Override
-	public void ejecutarOpcion(View view, Modelo modelo, Scanner lector) {
+	public Modelo ejecutarOpcion(View view, Modelo modelo, Scanner lector) {
 		view.printMessage("--------- \nIngrese el nombre del primer punto de conexión");
 		String punto1= lector.next();
 		lector.nextLine();
@@ -19,5 +19,7 @@ public class OpcionComponentesConectados extends Opcion {
 		
 		String res1=modelo.req1String(punto1, punto2);
 		view.printMessage(res1);
+		
+		return modelo;
 	}
 }

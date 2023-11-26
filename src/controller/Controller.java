@@ -39,7 +39,7 @@ public class Controller<T> {
 
 			int option = lector.nextInt();
 
-			getOpcion(option).ejecutarOpcion(view, modelo, lector);
+			modelo = getOpcion(option).ejecutarOpcion(view, modelo, lector);
 
 			if (option == 7) {
 				fin = true;

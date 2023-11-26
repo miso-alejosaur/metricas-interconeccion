@@ -8,9 +8,11 @@ import view.View;
 public class OpcionRedExpansionMinima extends Opcion {
 
 	@Override
-	public void ejecutarOpcion(View view, Modelo modelo, Scanner lector) {
+	public Modelo ejecutarOpcion(View view, Modelo modelo, Scanner lector) {
 		String res4= modelo.req4String();
 		view.printMessage(res4);
+		
+		return modelo;
 	}
 
 }

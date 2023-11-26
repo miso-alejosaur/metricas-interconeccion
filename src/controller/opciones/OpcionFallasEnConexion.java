@@ -8,12 +8,14 @@ import view.View;
 public class OpcionFallasEnConexion extends Opcion {
 
 	@Override
-	public void ejecutarOpcion(View view, Modelo modelo, Scanner lector) {
+	public Modelo ejecutarOpcion(View view, Modelo modelo, Scanner lector) {
 		view.printMessage("--------- \nIngrese el nombre del punto de conexión");
 		String landing= lector.next();
 		lector.nextLine();
 		String res5= modelo.req5String(landing);
 		view.printMessage(res5);
+		
+		return modelo;
 	}
 
 }
